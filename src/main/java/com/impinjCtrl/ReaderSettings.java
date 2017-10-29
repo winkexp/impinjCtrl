@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import lib.PropertyUtils;
 
+
 public class ReaderSettings {
     public static Settings getSettings (ImpinjReader reader) throws OctaneSdkException {
         Settings settings = reader.queryDefaultSettings();
@@ -38,7 +39,8 @@ public class ReaderSettings {
         settings.setSearchMode(SearchMode.DualTarget);
         //settings.setSearchMode(SearchMode.SingleTarget);
         //settings.setSearchMode(SearchMode.TagFocus);
-        settings.setSession(1);
+        settings.setSession(2);
+
         if (debugMode) {
             report.setIncludeAntennaPortNumber(true);
             report.setIncludeChannel(true);
@@ -54,8 +56,15 @@ public class ReaderSettings {
         for (short i = 1; i <= 4; i++) {
             //antennas.enableById(new short[]{i});
             // Define reader range
-            antennas.getAntenna(i).setIsMaxRxSensitivity(true);
-            antennas.getAntenna(i).setIsMaxTxPower(true);
+
+            // winkexp: 取消天线功率最大
+            //antennas.getAntenna(i).setIsMaxRxSensitivity(true);
+            //antennas.getAntenna(i).setIsMaxTxPower(true);
+
+            antennas.getAntenna(i).setIsMaxRxSensitivity(false);
+            antennas.getAntenna(i).setIsMaxTxPower(false);
+            antennas.getAntenna(i).setTxPowerinDbm(Properties.antennaTxPowerinDbm);
+            antennas.getAntenna(i).setRxSensitivityinDbm(Properties.rxSensitivityinDbm);
         }
         antennas.enableAll();
         return settings;
@@ -92,6 +101,7 @@ public class ReaderSettings {
         result.put("getRxSensitivityinDbm", rxSensitivity);
         result.put("getTxPowerinDbm", txPower);
 
+        System.out.print(">>> Reader STATUS in JSON Format: ");
         System.out.println(result.toJSONString());
         return result;
     }

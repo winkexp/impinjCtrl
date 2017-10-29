@@ -10,6 +10,7 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import lib.HttpClient;
 import lib.PropertyUtils;
+import lib.TextUtils;
 import okhttp3.*;
 import org.json.simple.JSONObject;
 //import org.json.simple.JSONArray;
@@ -66,16 +67,19 @@ public class ReaderController {
     JSONParser parser = new JSONParser();
 
     ReaderController(@NotNull String readerHost) {
-        this.mReaderHost = readerHost;
-        this.mApiHost = PropertyUtils.getAPiHost();
-        mIsDebugMode = PropertyUtils.isDebugMode();
+        this.mReaderHost = Properties.readerHost;
+        //this.mApiHost = PropertyUtils.getAPiHost();
+        this.mApiHost = Properties.apiHost;
+        mIsDebugMode = Properties.isDebugMode;
     }
 
     public void initialize() {
         mReader = new ImpinjReader();
+
         if (mIsDebugMode) {
             initReader();
         } else {
+
             mHttpClient = HttpClient.getInstance();
             try {
                 if (mApiHost.matches("^(https)://.*$")) {
@@ -104,7 +108,7 @@ public class ReaderController {
                         System.out.println("Connected: " + mApiHost + ". socket ID: " + mSocketId);
 
                         Request sendMsg = new Request.Builder()
-                                    .url(PropertyUtils.getAPiHost() + "/api/socket/impinj?sid=" + mSocketId)
+                                    .url(PropertyUtils.getAPiHost() + Properties.apiUri + "?sid=" + mSocketId)
                                     .build();
                         mHttpClient.request(sendMsg, new Callback() {
                             public void onFailure(Call call, IOException e) {
@@ -191,7 +195,7 @@ public class ReaderController {
                         }
                         System.out.println("Responding reader status: " + mMsg.toJSONString());
                         Request sendMsg = new Request.Builder()
-                                    .url(PropertyUtils.getAPiHost() + "/api/socket/impinj?sid=" + mSocketId)
+                                    .url(PropertyUtils.getAPiHost() + Properties.apiUri + "?sid=" + mSocketId)
                                     .post(RequestBody.create(HttpClient.MEDIA_TYPE_JSON, mMsg.toJSONString()))
                                     .build();
                         mHttpClient.request(sendMsg, new Callback() {
@@ -225,25 +229,30 @@ public class ReaderController {
                 System.out.println("Socket.io error: " + e.getMessage());
             }
         }
+
     }
     private void initReader() {
         if (null == mReader) {
             System.out.println("reader obj is null: initialReader");
             return;
         }
-        System.out.println("Initializing reader");
+        System.out.println("Initializing reader ...");
         try {
             dischargeReader();
             mReader.connect(mReaderHost);
+
+            System.out.println("Applying reader settings ...");
             Settings settings = ReaderSettings.getSettings(mReader);
-            mReader.setTagReportListener(new ReportFormat());
             mReader.applySettings(settings);
 
+            mReader.setTagReportListener(new ReportFormat());
+
+            TextUtils.printUsage();
             // 後門
             Scanner s = new Scanner(System.in);
             while (s.hasNextLine() && mReader.isConnected()) {
                 String line = s.nextLine();
-                System.out.println(line);
+                System.out.println("Received Command: " + line);
                 if (line.equals("START")) {
                     mValidIntervalMs = PropertyUtils.getDefaultValidIntervalMs();
                     mRecordsHashTable = new JSONObject();
@@ -254,6 +263,9 @@ public class ReaderController {
                     mReader.stop();
                 } else if (line.equals("STATUS")) {
                     ReaderSettings.getReaderInfo(mReader, settings);
+                } else {
+                    System.out.println("!!! Wrong Command: " + line);
+                    TextUtils.printUsage();
                 }
             }
         } catch (OctaneSdkException e) {

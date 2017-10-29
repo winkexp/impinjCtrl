@@ -15,4 +15,11 @@ public class TextUtils {
         else
             return false;
     }
+
+    public static void printUsage(){
+        System.out.println( ">>> Please input command as below: ");
+        System.out.println( "   STATUS: Get reader status");
+        System.out.println( "   START: Start working ");
+        System.out.println( "   STOP: Stop working");
+    }
 }

@@ -83,6 +83,7 @@ public class ReportFormat implements TagReportListener {
                 epc = ReaderController.mSlaveEpcMap.get(readingEpc).toString();
                 isSlaveEpc = true;
             }
+            //
             if (mIsDebugMode) {
                 JSONObject result = new JSONObject();
                 try {
