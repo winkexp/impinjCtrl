@@ -1,4 +1,3 @@
 Manifest-Version: 1.0
-Class-Path: /Users/bruce/IdeaProjects/impinjCtrl/src/lib
 Main-Class: com.impinjCtrl.ReadTags
 
