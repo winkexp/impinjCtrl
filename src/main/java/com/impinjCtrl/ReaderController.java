@@ -3,7 +3,7 @@ package com.impinjCtrl;
 import com.impinj.octane.ImpinjReader;
 import com.impinj.octane.OctaneSdkException;
 import com.impinj.octane.Settings;
-import com.sun.istack.internal.NotNull;
+//import com.sun.istack.internal.NotNull;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
@@ -25,7 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Scanner;
-import com.sun.istack.internal.Nullable;
+//import com.sun.istack.internal.Nullable;
 
 
 public class ReaderController {
@@ -67,7 +67,7 @@ public class ReaderController {
 
     JSONParser parser = new JSONParser();
 
-    ReaderController(@NotNull String readerHost) {
+    ReaderController(String readerHost) {
         this.mReaderHost = Properties.readerHost;
         //this.mApiHost = PropertyUtils.getAPiHost();
         this.mApiHost = Properties.apiHost;
