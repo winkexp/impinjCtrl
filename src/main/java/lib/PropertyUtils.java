@@ -2,29 +2,25 @@ package lib;
 
 import com.impinjCtrl.Properties;
 import com.impinjCtrl.ReaderController;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PropertyUtils {
 
     public static boolean isDebugMode() {
-        return Properties.isDebugMode;
+        String debugMode = System.getProperty(Properties.debugMode, "0");
+        return debugMode.equals("1");
     }
-
     public static String getLogFileName() {
-        String logDir = Properties.logDir;
-        String fileName = "R420_log";
+        String logDir = System.getProperty(Properties.logDir,"./");
+        String logFileName = "R420_";
 
-//        if (ReaderController.mRaceId != null) {
-//            fileName = "race-" + ReaderController.mRaceId;
-//        } else {
-//            fileName = "event-" + ReaderController.mEventId;
-//        }
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");//设置日期格式
+        String date = df.format(new Date());// new Date()为获取当前系统时间
 
-        System.out.println("LogFileName: " + fileName);
-        return logDir + fileName + ".json";
-    }
-
-    public static String getAPiHost() {
-        return System.getProperty(Properties.apiHost);
+        String jsonLogFileName = logDir + logFileName + date + ".json";
+        System.out.println("LogFileName: " + jsonLogFileName);
+        return jsonLogFileName;
     }
 
     public static Long getTimestamp() {
@@ -32,7 +28,7 @@ public class PropertyUtils {
     }
 
     public static Long getDefaultValidIntervalMs () {
-        // Default interval: 1000ms
-        return Long.parseLong(Properties.validIntervalMs);
+        // Default interval: 500ms
+        return Long.parseLong(System.getProperty(Properties.validIntervalMs, "500"));
     }
 }

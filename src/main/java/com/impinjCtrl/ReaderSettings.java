@@ -21,6 +21,9 @@ public class ReaderSettings {
         Settings settings = reader.queryDefaultSettings();
         Boolean debugMode = PropertyUtils.isDebugMode();
 
+        // accept parameters as txPowerinDbm
+        double antennaTxPowerinDbm = Double.parseDouble(System.getProperty(Properties.txPowerinDbm, "23.0"));
+
         ReportConfig report = settings.getReport();
         report.setIncludeFirstSeenTime(true);
         report.setMode(ReportMode.Individual);
@@ -36,10 +39,13 @@ public class ReaderSettings {
         // TagFocus uses Singletarget session 1 with fewer reports when in sensor field
         // Race timing recommendation: session 1
         // http://racetiming.wimsey.co/2015/05/rfid-inventory-search-modes.html
-        settings.setSearchMode(SearchMode.DualTarget);
+        //settings.setSearchMode(SearchMode.DualTarget);
         //settings.setSearchMode(SearchMode.SingleTarget);
-        //settings.setSearchMode(SearchMode.TagFocus);
-        settings.setSession(2);
+        //settings.setSession(2);
+
+        //SearchMode.TagFocus can only be used when Session = 1
+        settings.setSearchMode(SearchMode.TagFocus);
+        settings.setSession(1);
 
         if (debugMode) {
             report.setIncludeAntennaPortNumber(true);
@@ -52,21 +58,33 @@ public class ReaderSettings {
         // set some special settings for antennas
         AntennaConfigGroup antennas = settings.getAntennas();
         antennas.disableAll();
+        // set some special settings for antenna 1
+        antennas.enableById(new short[]{1});
+        antennas.getAntenna((short) 1).setIsMaxRxSensitivity(false);
+        antennas.getAntenna((short) 1).setIsMaxTxPower(false);
+        antennas.getAntenna((short) 1).setTxPowerinDbm(antennaTxPowerinDbm);
+        antennas.getAntenna((short) 1).setRxSensitivityinDbm(Properties.rxSensitivityinDbm);
 
-        for (short i = 1; i <= 4; i++) {
-            //antennas.enableById(new short[]{i});
-            // Define reader range
+        // set some special settings for antenna 2
+        antennas.enableById(new short[]{2});
+        antennas.getAntenna((short) 2).setIsMaxRxSensitivity(false);
+        antennas.getAntenna((short) 2).setIsMaxTxPower(false);
+        antennas.getAntenna((short) 2).setTxPowerinDbm(antennaTxPowerinDbm);
+        antennas.getAntenna((short) 2).setRxSensitivityinDbm(Properties.rxSensitivityinDbm);
 
-            // winkexp: 取消天线功率最大
-            //antennas.getAntenna(i).setIsMaxRxSensitivity(true);
-            //antennas.getAntenna(i).setIsMaxTxPower(true);
-
-            antennas.getAntenna(i).setIsMaxRxSensitivity(false);
-            antennas.getAntenna(i).setIsMaxTxPower(false);
-            antennas.getAntenna(i).setTxPowerinDbm(Properties.antennaTxPowerinDbm);
-            antennas.getAntenna(i).setRxSensitivityinDbm(Properties.rxSensitivityinDbm);
-        }
-        antennas.enableAll();
+//        for (short i = 1; i <= 4; i++) {
+//            //antennas.enableById(new short[]{i});
+//            // Define reader range
+//            // 取消天线功率最大
+//            //antennas.getAntenna(i).setIsMaxRxSensitivity(true);
+//            //antennas.getAntenna(i).setIsMaxTxPower(true);
+//
+//            antennas.getAntenna(i).setIsMaxRxSensitivity(false);
+//            antennas.getAntenna(i).setIsMaxTxPower(false);
+//            antennas.getAntenna(i).setTxPowerinDbm(Properties.antennaTxPowerinDbm);
+//            antennas.getAntenna(i).setRxSensitivityinDbm(Properties.rxSensitivityinDbm);
+//        }
+        //antennas.enableAll();
         return settings;
     }
     public static JSONObject getReaderInfo (ImpinjReader reader, Settings settings) throws OctaneSdkException {
