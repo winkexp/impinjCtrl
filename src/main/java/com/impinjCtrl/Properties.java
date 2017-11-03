@@ -27,7 +27,7 @@ public class Properties {
     // 天线发射功率
     // double. The amount of transmit power to use on the antenna. Only use power levels the Reader supports,
     // typically in the range of 10.00 to 30.00 dBm in 0.25 dBm steps.
-    public static double antennaTxPowerinDbm = 21.0;
+    public static double antennaTxPowerinDbm = 23.0;
 
     //信号接收灵敏度
     // bool. Whether the Reader’s maximum sensitivity is used. When true the Reader reports all tags that it can

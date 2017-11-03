@@ -48,6 +48,7 @@ public class ReaderController {
     private ImpinjReader mReader;
     private Socket mSocket;
 
+    // for https
     private HostnameVerifier myHostnameVerifier = new HostnameVerifier() {
         public boolean verify(String hostname, SSLSession session) {
             return true;
